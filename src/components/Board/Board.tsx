@@ -1,41 +1,15 @@
-import {BoardState} from "@/src/types/board";
-import styles from "./Board.module.css";
-import Column from "@/src/components/Column/Column";
+'use client';
 
-const mockData: BoardState = {
-    tasks: {
-        'task-1': {
-            id: 'task-1',
-            title: 'Настроить ESLint',
-            description: 'Добавить правила для TypeScript',
-            createdAt: Date.now()
-        },
-        'task-2': {id: 'task-2', title: 'Создать компоненты', createdAt: Date.now()},
-        'task-3': {
-            id: 'task-3',
-            title: 'Подключить Redux',
-            description: 'Настроить store и boardSlice',
-            createdAt: Date.now()
-        },
-        'task-4': {
-            id: 'task-4',
-            title: 'Реализовать DnD',
-            description: 'Перетаскивание карточек между колонками',
-            createdAt: Date.now()
-        },
-        'task-5': {id: 'task-5', title: 'Написать README', createdAt: Date.now()},
-    },
-    columns: {
-        'col-1': {id: 'col-1', title: 'To Do', taskIds: ['task-1', 'task-2']},
-        'col-2': {id: 'col-2', title: 'In Progress', taskIds: ['task-3', 'task-4']},
-        'col-3': {id: 'col-3', title: 'Done', taskIds: ['task-5']},
-    },
-    columnOrder: ['col-1', 'col-2', 'col-3'],
-};
+import { useAppSelector } from '@/src/store/hooks';
+import Column from '@/src/components/Column/Column';
+import styles from './Board.module.css';
 
-export default function Board(){
-    const {tasks,columns,columnOrder} = mockData;
-    return(
+export default function Board() {
+    const tasks = useAppSelector(state => state.board.tasks);
+    const columns = useAppSelector(state => state.board.columns);
+    const columnOrder = useAppSelector(state => state.board.columnOrder);
+
+    return (
         <div className={styles.wrapper}>
             <header className={styles.header}>
                 <div className={styles.headerInner}>
@@ -60,4 +34,3 @@ export default function Board(){
         </div>
     );
 }
-
