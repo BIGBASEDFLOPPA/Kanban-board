@@ -141,3 +141,13 @@
 .submitBtn:hover {
     background: var(--color-primary-hover);
 }
+
+.inputError {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.errorMsg {
+    font-size: var(--font-size-xs);
+    color: var(--color-danger);
+}

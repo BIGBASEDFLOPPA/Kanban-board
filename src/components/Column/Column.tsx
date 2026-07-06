@@ -1,20 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Column as ColumnType, Task, TaskPriority, TaskType } from '@/src/types/board';
 import { useAppDispatch } from '@/src/store/hooks';
 import { addTask } from '@/src/features/board/boardSlice';
-import TaskCard from '@/src/components/TaskCard/TaskCard';
 import TaskModal from '@/src/components/TaskModal/TaskModal';
 import styles from './Column.module.css';
 
 interface ColumnProps {
     column: ColumnType;
     tasks: Task[];
+    children?: React.ReactNode;
 }
 
-export default function Column({ column, tasks }: ColumnProps) {
+export default function Column({ column, tasks, children }: ColumnProps) {
     const dispatch = useAppDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,13 +44,10 @@ export default function Column({ column, tasks }: ColumnProps) {
             </div>
 
             <div className={styles.taskList}>
-                {tasks.length === 0 ? (
-                    <p className={styles.empty}>Нет задач</p>
-                ) : (
-                    tasks.map(task => (
-                        <TaskCard key={task.id} task={task} columnId={column.id} />
-                    ))
-                )}
+                {}
+                {children ?? tasks.map(task => (
+                    <div key={task.id}>{task.title}</div>
+                ))}
             </div>
 
             <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>

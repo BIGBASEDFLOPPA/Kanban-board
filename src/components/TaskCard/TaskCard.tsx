@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Task, TaskPriority, TaskType } from '@/src/types/board';
 import { useAppDispatch } from '@/src/store/hooks';
 import { deleteTask, updateTask } from '@/src/features/board/boardSlice';
@@ -10,6 +10,7 @@ import styles from './TaskCard.module.css';
 interface TaskCardProps {
     task: Task;
     columnId: string;
+    isDragging?: boolean;
 }
 
 const priorityConfig = {
@@ -24,7 +25,7 @@ const typeConfig = {
     feature: { label: 'Feature', className: 'typeFeature' },
 };
 
-export default function TaskCard({ task, columnId }: TaskCardProps) {
+export default function TaskCard({ task, columnId, isDragging = false }: TaskCardProps) {
     const dispatch = useAppDispatch();
     const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -38,6 +39,7 @@ export default function TaskCard({ task, columnId }: TaskCardProps) {
 
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (!columnId) return;
         dispatch(deleteTask({ taskId: task.id, columnId }));
     };
 
@@ -57,7 +59,7 @@ export default function TaskCard({ task, columnId }: TaskCardProps) {
 
     return (
         <>
-            <div className={styles.card}>
+            <div className={`${styles.card} ${isDragging ? styles.dragging : ''}`}>
                 <div className={styles.badges}>
           <span className={`${styles.badge} ${styles[type.className]}`}>
             {type.label}
@@ -66,10 +68,12 @@ export default function TaskCard({ task, columnId }: TaskCardProps) {
             {priority.label}
           </span>
 
-                    <div className={styles.actions}>
-                        <button className={styles.actionBtn} onClick={handleEdit} title="Редактировать">✎</button>
-                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={handleDelete} title="Удалить">✕</button>
-                    </div>
+                    {columnId && (
+                        <div className={styles.actions}>
+                            <button className={styles.actionBtn} onClick={handleEdit} title="Редактировать">✎</button>
+                            <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={handleDelete} title="Удалить">✕</button>
+                        </div>
+                    )}
                 </div>
 
                 <h3 className={styles.title}>{task.title}</h3>
@@ -84,7 +88,7 @@ export default function TaskCard({ task, columnId }: TaskCardProps) {
                 </div>
             </div>
 
-            {isEditOpen && (
+            {isEditOpen && columnId && (
                 <TaskModal
                     columnId={columnId}
                     task={task}

@@ -1,0 +1,13 @@
+.dropZone {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    border-radius: 8px;
+    transition: background var(--transition-base);
+    min-height: 60px;
+}
+
+.isOver {
+    background: var(--color-primary-light);
+}

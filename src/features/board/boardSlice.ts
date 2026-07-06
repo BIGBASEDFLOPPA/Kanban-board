@@ -94,8 +94,26 @@ const boardSlice = createSlice({
             );
         },
 
+        moveTask: (
+            state,
+            action: PayloadAction<{
+                taskId: string;
+                fromColumnId: string;
+                toColumnId: string;
+                toIndex: number;
+            }>
+        ) => {
+            const { taskId, fromColumnId, toColumnId, toIndex } = action.payload;
+
+            state.columns[fromColumnId].taskIds = state.columns[fromColumnId].taskIds.filter(
+                id => id !== taskId
+            );
+
+            state.columns[toColumnId].taskIds.splice(toIndex, 0, taskId);
+        },
+
     },
 });
 
-export const { addTask, updateTask, deleteTask } = boardSlice.actions;
+export const { addTask, updateTask, deleteTask, moveTask } = boardSlice.actions;
 export default boardSlice.reducer;
