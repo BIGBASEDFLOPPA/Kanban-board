@@ -4,7 +4,8 @@ const STORAGE_KEY = 'kanban_board_state';
 
 export function saveState(state: BoardState): void {
     try {
-        const serialized = JSON.stringify(state);
+        const { tasks, columns, columnOrder } = state;
+        const serialized = JSON.stringify({ tasks, columns, columnOrder });
         localStorage.setItem(STORAGE_KEY, serialized);
     } catch (err) {
         console.warn('Could not save state to localStorage:', err);

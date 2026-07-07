@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/src/store/hooks';
 import { moveTask } from '@/src/features/board/boardSlice';
+import { fetchBoard } from '@/src/features/board/boardSlice';
 import { Task } from '@/src/types/board';
 import DroppableColumn from '@/src/components/DroppableColumn/DroppableColumn';
 import TaskCard from '@/src/components/TaskCard/TaskCard';
@@ -24,15 +25,24 @@ export default function Board() {
     const tasks = useAppSelector(state => state.board.tasks);
     const columns = useAppSelector(state => state.board.columns);
     const columnOrder = useAppSelector(state => state.board.columnOrder);
+    const status = useAppSelector(state => state.board.status);
+    const error = useAppSelector(state => state.board.error);
 
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+    // Загружаем данные при монтировании
+    // Если localStorage уже есть данные — пропускаем fetch
+    useEffect(() => {
+        if (status === 'idle' && columnOrder.length === 0) {
+            dispatch(fetchBoard());
+        }
+    }, [status, columnOrder.length, dispatch]);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: { distance: 5 },
         })
     );
-
 
     const findColumnByTaskId = useCallback((taskId: string): string | undefined => {
         return Object.values(columns).find(col =>
@@ -76,6 +86,42 @@ export default function Board() {
 
         dispatch(moveTask({ taskId, fromColumnId, toColumnId, toIndex }));
     }, [dispatch, columns, findColumnByTaskId]);
+
+    // Состояния загрузки и ошибки
+    if (status === 'loading') {
+        return (
+            <div className={styles.wrapper}>
+                <header className={styles.header}>
+                    <div className={styles.headerInner}>
+                        <div className={styles.headerLeft}>
+                            <span className={styles.logo}>Kanban</span>
+                            <span className={styles.projectName}>My Project</span>
+                        </div>
+                    </div>
+                </header>
+                <div className={styles.centered}>
+                    <div className={styles.spinner} />
+                    <p className={styles.loadingText}>Загрузка доски...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (status === 'failed') {
+        return (
+            <div className={styles.wrapper}>
+                <div className={styles.centered}>
+                    <p className={styles.errorText}>Ошибка: {error}</p>
+                    <button
+                        className={styles.retryBtn}
+                        onClick={() => dispatch(fetchBoard())}
+                    >
+                        Повторить
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.wrapper}>
