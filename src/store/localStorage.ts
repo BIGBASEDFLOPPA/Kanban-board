@@ -12,11 +12,16 @@ export function saveState(state: BoardState): void {
     }
 }
 
-export function loadState(): BoardState | undefined {
+export function loadState() {
     try {
         const serialized = localStorage.getItem(STORAGE_KEY);
         if (!serialized) return undefined;
-        return JSON.parse(serialized) as BoardState;
+        const parsed = JSON.parse(serialized) as BoardState;
+        return {
+            ...parsed,
+            status: 'succeeded' as const,
+            error: null,
+        };
     } catch (err) {
         console.warn('Could not load state from localStorage:', err);
         return undefined;
